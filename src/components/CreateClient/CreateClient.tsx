@@ -8,22 +8,21 @@ type ClientProps = {
     modalRoot?: Element;
 };
 
-const CreateClient: React.FC<ClientProps> = ({ onCreate, onClose, modalRoot = document.body  }) => {
+const CreateClient: React.FC<ClientProps> = ({ onCreate, onClose, modalRoot = document.body }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [deferralDays, setDeferralDays] = useState('');
-
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const client: Customer = {
-            id: Math.floor(Math.random() * 1000), // генерируем случайный ID
+            id: Math.floor(Math.random() * 1000),
             name,
             email,
             deferral_days: parseInt(deferralDays),
-            created_at: new Date(),
-            updated_at: new Date(),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
         };
         onCreate(client);
         setName('');
@@ -33,12 +32,9 @@ const CreateClient: React.FC<ClientProps> = ({ onCreate, onClose, modalRoot = do
     const handleClose = () => {
         onClose();
     };
-
-
     if (!modalRoot) {
         return null;
     }
-
     return ReactDOM.createPortal(
         <>
             <div className={styles.modalOverlay} onClick={handleClose} />

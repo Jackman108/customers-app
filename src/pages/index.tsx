@@ -16,8 +16,8 @@ function Home(): JSX.Element {
 
   useEffect(() => {
     const getClients = async () => {
-      const server = await makeServer();
-      const data = server.db.customers;
+      const response = await fetch('/api/customers');
+      const data = await response.json();
       setClients(data || []);
       saveClientsToStorage(data);
     };
@@ -67,15 +67,15 @@ function Home(): JSX.Element {
 
   const handleSave = (editedClient: Customer) => {
     const updatedClients = clients.map((client) => {
-    if (client.id === editedClient.id) {
-    return editedClient;
-    } else {
-    return client;
-    }
+      if (client.id === editedClient.id) {
+        return editedClient;
+      } else {
+        return client;
+      }
     });
     setClients(updatedClients);
     saveClientsToStorage(updatedClients);
-    };
+  };
 
   const MemoizedTable = React.memo(Table);
 
@@ -95,9 +95,9 @@ function Home(): JSX.Element {
           handleSearch={handleSearch}
           handleResetSearch={handleResetSearch} />
 
-        <MemoizedTable 
-        clients={clients} 
-        onSave={handleSave}/>
+        <MemoizedTable
+          clients={clients}
+          onSave={handleSave}/>
         {showModal &&
           <CreateClient
             onCreate={handleAdd}

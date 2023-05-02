@@ -1,13 +1,11 @@
-const CLIENTS_KEY = 'clients';
+export function saveClientsToStorage(clients: Customer[]) {
+    localStorage.setItem('clients', JSON.stringify(clients));
+}
 
-export const loadClientsFromStorage = (): Customer[] => {
-    try {
-        const clients = JSON.parse(localStorage.getItem(CLIENTS_KEY) || '');
-        return clients;
-    } catch {
-        return [];
+export function loadClientsFromStorage(): Customer[] | undefined {
+    const data = localStorage.getItem('clients');
+    if (data) {
+        return JSON.parse(data) as Customer[];
     }
-};
-export const saveClientsToStorage = (clients: Customer[]) => {
-    localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients || []));
-};
+    return undefined;
+}

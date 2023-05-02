@@ -4,12 +4,12 @@ import { FaCopy } from 'react-icons/fa';
 
 
 interface TableProps {
-    clients?: Customer[];
-    onSort?: (field: string) => void;
+    clients: Customer[];
+    onSort?: (field: keyof Customer) => void;
     onSave: (editedClient: Customer) => void;
 }
 
-const Table: React.FC<TableProps> = ({ clients = [], onSort, onSave }) => {
+const Table: React.FC<TableProps> = ({ clients = [], onSort }) => {
     const COLUMNS = [
         { field: 'name', header: 'Имя' },
         { field: 'id', header: 'ID' },
@@ -18,18 +18,21 @@ const Table: React.FC<TableProps> = ({ clients = [], onSort, onSave }) => {
         { field: 'created_at', header: 'Создан' },
         { field: 'updated_at', header: 'Изменен' },
     ];
+    // Состояние для хранения информации о том, был ли скопирован клиент
     const [isCopied, setCopied] = useState(false);
+    // Состояние для хранения текущего поля сортировки
+    const [sortField, setSortField] = useState<string>('');
+    // Состояние для хранения текущего порядка сортировки
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
+    // Функция для обработки события клика на иконку копирования
     const handleCopy = (client: Customer) => {
         const text = `Имя: ${client.name}, Email: ${client.email}, Отсрочка: ${client.deferral_days}`;
         navigator.clipboard.writeText(text);
         setCopied(true);
         setTimeout(() => setCopied(false), 1500);
     };
-    //состояния для хранения текущего поля сортировки
-    const [sortField, setSortField] = useState<string>('');
-    //состояния для хранения текущего порядка сортировки 
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+
     // функция для обработки события клика на заголовок колонки таблицы
     const handleSort = (field: string) => {
         if (sortField === field) {
@@ -42,11 +45,8 @@ const Table: React.FC<TableProps> = ({ clients = [], onSort, onSave }) => {
             onSort(field);
         }
     };
-
+    // Сортированный массив клиентов
     const sortedClients = React.useMemo(() => {
-        if (!sortField) {
-            return clients;
-        }
         const sorted = [...clients].sort((a, b) => {
             if (a[sortField] < b[sortField]) {
                 return sortOrder === 'asc' ? -1 : 1;
@@ -59,10 +59,6 @@ const Table: React.FC<TableProps> = ({ clients = [], onSort, onSave }) => {
         return sorted;
     }, [clients, sortField, sortOrder]);
 
-    const handleSave = (field: string, editedClient: Customer) => {
-        const updatedClient = { ...editedClient, [field]: editedClient[field] };
-        onSave(updatedClient);
-    };
 
     return (
         <>
@@ -89,8 +85,8 @@ const Table: React.FC<TableProps> = ({ clients = [], onSort, onSave }) => {
                             </td>
                             <td className={styles.tableCell}>{client.email}</td>
                             <td className={styles.tableCell}>{client.deferral_days}</td>
-                            <td className={styles.tableCell}>{new Date(client.created_at).toLocaleDateString()}</td>
-                            <td className={styles.tableCell}>{new Date(client.updated_at).toLocaleDateString()}</td>
+                            <td className={styles.tableCell}>{new Date(client.created_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
+                            <td className={styles.tableCell}>{new Date(client.updated_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
                         </tr>
                     ))}
 
