@@ -57,7 +57,6 @@ const Header: React.FC<HeaderProps> = ({
                 onCreate={onCreate}
                 bindings={bindings}
                 onClose={handleClose}
-
             />
 
         </header>

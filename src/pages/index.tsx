@@ -3,32 +3,6 @@ import styles from '@/styles/Home.module.css';
 import React, { useState, useEffect } from 'react';
 import Table from '@/components/Table/Table';
 import Header from '@/components/Header/Header';
-import { saveClientsToStorage, loadClientsFromStorage } from '@/pages/api/localStorage';
-interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  deferral_days: number;
-  credit_limit?: number;
-  org?: {
-      id: string;
-      name: string;
-      inn: string;
-      kpp: string;
-      ogrn: string;
-      addr: string;
-      bank_accounts?: Array<{
-          id: string;
-          name: string;
-          bik: string;
-          account_number: string;
-          corr_account_number: string;
-          is_default: boolean;
-          created_at: string;
-          updated_at: string;
-      }>;    
-  }
-}
 
 function Home(): JSX.Element {
   const [searchText, setSearchText] = useState('');
@@ -36,48 +10,38 @@ function Home(): JSX.Element {
 
   useEffect(() => {
     const getClients = async () => {
-      const response = await fetch('/api/customers');
-      const data = await response.json();
-      setClients(data || []);
-      saveClientsToStorage(data);
+      try {
+        const response = await fetch('/api/customers');
+        if (!response.ok) {
+          throw new Error('Failed to fetch customers');
+        }
+        const data = await response.json();
+        setClients(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error('Failed to fetch customers', error);
+      }
     };
-
     getClients();
-    const clientsFromStorage = loadClientsFromStorage() as Customer[];
-    if (clientsFromStorage && clientsFromStorage.length) {
-      setClients(clientsFromStorage);
-    }
   }, []);
 
   useEffect(() => {
-    const clientsFromStorage = loadClientsFromStorage();
-    if (searchText === '' && clientsFromStorage) {
-      setClients(clientsFromStorage);
-    }
-  }, [searchText]);
+    const filteredClients = searchText ? clients.filter((client) =>
+      client.name.toLowerCase().includes(searchText.toLowerCase())
+      ) : clients;
+    setClients(filteredClients);
+  }, [searchText, clients]);
 
   const handleAdd = (client: Customer) => {
-    const newClients = [...clients, client];
+    const newClients = Array.isArray(clients) ? [...clients, client] : [client];
     setClients(newClients);
-    saveClientsToStorage(newClients);
   };
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const allClients = loadClientsFromStorage();
-    if (!allClients) return;
-    const filteredClients = allClients.filter((client) =>
-      client.name.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setClients(filteredClients);
   };
 
   const handleResetSearch = () => {
     setSearchText('');
-    const clientsFromStorage = loadClientsFromStorage();
-    if (clientsFromStorage) {
-      setClients(clientsFromStorage);
-    }
   };
 
   const handleSave = (editedClient: Customer) => {
@@ -89,10 +53,8 @@ function Home(): JSX.Element {
       }
     });
     setClients(updatedClients);
-    saveClientsToStorage(updatedClients);
-  };  
+  };
 
-  
   const MemoizedTable = React.memo(Table);
   return (
     <>
@@ -107,9 +69,9 @@ function Home(): JSX.Element {
           searchText={searchText}
           setSearchText={setSearchText}
           handleSearch={handleSearch}
-          handleResetSearch={handleResetSearch} 
+          handleResetSearch={handleResetSearch}
           onCreate={handleAdd}
-          />
+        />
         <MemoizedTable
           clients={clients}
           onSave={handleSave} />

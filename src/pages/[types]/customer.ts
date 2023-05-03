@@ -20,7 +20,14 @@ interface Customer {
             is_default: boolean;
             created_at: string;
             updated_at: string;
-        }>;    
-    }
-
+        }>;
+        created_at: string;
+        updated_at: string;
+    },
+    metadata?: {
+        key: string;
+        volume: string;
+    },
+    created_at: string;
+    updated_at: string;
 }

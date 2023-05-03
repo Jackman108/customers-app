@@ -12,6 +12,7 @@ export function makeServer({ environment = "development" } = {}) {
                         name: "Test11",
                         email: "фывфыв@gmail.com",
                         deferral_days: 14,
+                        credit_limit: 14,
                         org: {
                             id: "131b9d78-ad58-415f-aab4-779a9e87edfd",
                             name: "Название организации",

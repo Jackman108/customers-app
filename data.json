@@ -5,6 +5,7 @@
             "name": "Test11",
             "email": "фывфыв@gmail.com",
             "deferral_days": 14,
+            "credit_limit": 14,
             "org": {
                 "id": "131b9d78-ad58-415f-aab4-779a9e87edfd",
                 "name": "Название организации",
@@ -59,6 +60,7 @@
             "name": "ООО \"АМАЗОН\"",
             "email": "test@test.test",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "80372dac-1b65-4aa3-9406-ef893d8ad988",
                 "name": "ООО \"АМАЗОН\"",
@@ -103,6 +105,7 @@
             "name": "ООО \"АМАЗОН\"",
             "email": "test@test.test",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "bb99339b-757e-4244-b5f9-5a0591729101",
                 "name": "ООО \"АМАЗОН\"",
@@ -147,6 +150,7 @@
             "name": "АО \"АЗСМ 2\"",
             "email": "test@test.test",
             "deferral_days": 60,
+            "credit_limit": 14,
             "org": {
                 "id": "81a44002-7724-49a1-b9ff-ab4e316482db",
                 "name": "АО \"АЗСМ 2\"",
@@ -191,6 +195,7 @@
             "name": "АО \"АЗСМ 2\"",
             "email": "test@test.test",
             "deferral_days": 60,
+            "credit_limit": 14,
             "org": {
                 "id": "046fbdcb-fb6f-49f4-b116-73f72f0ac0bb",
                 "name": "АО \"АЗСМ 2\"",
@@ -235,6 +240,7 @@
             "name": "Test10",
             "email": "фывфыв2@gmail.com",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "0b1e29ec-aa92-4e7b-aa15-77a8a7d23cfa",
                 "name": "Название организации",
@@ -281,6 +287,7 @@
             "name": "Test1",
             "email": "фывфыв@gmail.com",
             "deferral_days": 14,
+            "credit_limit": 14,
             "org": {
                 "id": "4ab5b278-06f2-42a8-b1b1-40ef638a5e4f",
                 "name": "Название организации",
@@ -327,6 +334,7 @@
             "name": "Test1",
             "email": "makыkin@toyotafs.ru",
             "deferral_days": 14,
+            "credit_limit": 14,
             "org": {
                 "id": "3f7284b3-81ef-486a-84d5-1e5872f8c4db",
                 "name": "Название организации",
@@ -372,6 +380,7 @@
             "name": "Test1",
             "email": "maksim.b@toyotafs.ru",
             "deferral_days": 123,
+            "credit_limit": 14,
             "org": {
                 "id": "405499b9-b9d9-4cf9-be25-422de80679ca",
                 "name": "Название организации",
@@ -415,6 +424,7 @@
             "name": "Test1",
             "email": "фывфыв@gmail.com",
             "deferral_days": 13,
+            "credit_limit": 14,
             "org": {
                 "id": "9b3e3bae-d6d7-4c27-a6ba-ad26c6379e04",
                 "name": "Название организации",
@@ -457,6 +467,7 @@
             "name": "Test2",
             "email": "test@test.com",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "3dd2036d-753b-4e4a-a91e-5264e686f1b6",
                 "name": "Название организации",
@@ -502,6 +513,7 @@
             "name": "Test1",
             "email": "test@test.com",
             "deferral_days": 14,
+            "credit_limit": 14,
             "org": {
                 "id": "7f3b444c-011e-4357-b5a8-460e522b3d21",
                 "name": "Название организации",
@@ -544,6 +556,7 @@
             "name": "АО АЗСМ NEW BILLING 2",
             "email": "test@test.test",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "29f86409-cc71-46f3-acd9-8988c9203ea0",
                 "name": "АО АЗСМ NEW BILLING 2",
@@ -588,6 +601,7 @@
             "name": "АО АЗСМ NEW BILLING 2",
             "email": "test@test.test",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "7436ec21-5b89-4a06-b28c-69b4a8b154e9",
                 "name": "АО АЗСМ NEW BILLING 2",
@@ -632,6 +646,7 @@
             "name": "ООО \"РОМАТИ\"",
             "email": "test@test.com",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "6cf28a15-3c05-411b-a73a-49f5b11f835c",
                 "name": "ООО \"РОМАТИ\"",
@@ -674,6 +689,7 @@
             "name": "ООО \"РОМАТИ\"",
             "email": "test@test.com",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "a6e9b0cc-4f74-4501-a865-f9ebe0ce3fca",
                 "name": "ООО \"РОМАТИ\"",
@@ -718,6 +734,7 @@
             "name": "ООО \"БАЙКАЛПРОФИТУР\"",
             "email": "test@test.com",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "8f2f78a5-a73b-4b7b-991b-3309c4cdc608",
                 "name": "ООО \"БАЙКАЛПРОФИТУР\"",
@@ -760,6 +777,7 @@
             "name": "ООО \"БАЙКАЛПРОФИТУР\"",
             "email": "test@test.com",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "ed6a1ca6-4103-4ebc-8b2e-2e7c77801044",
                 "name": "ООО \"БАЙКАЛПРОФИТУР\"",
@@ -802,6 +820,7 @@
             "name": "ООО \"ДАЛЬНЕРЕЧЕНСК АВИА\"",
             "email": "test@gmail.com",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "91ea6d41-9fb5-4b52-86cd-243cb632599f",
                 "name": "ООО \"ДАЛЬНЕРЕЧЕНСК АВИА\"",
@@ -844,6 +863,7 @@
             "name": "ООО \"ДАЛЬНЕРЕЧЕНСК АВИА\"",
             "email": "test@gmail.com",
             "deferral_days": 7,
+            "credit_limit": 14,
             "org": {
                 "id": "a9eeb953-a05d-4f4b-9178-4a6f4f46b04f",
                 "name": "ООО \"ДАЛЬНЕРЕЧЕНСК АВИА\"",

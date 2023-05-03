@@ -1,7 +1,5 @@
-import { Modal, useModal, Button, Text, Collapse, Input } from "@nextui-org/react";
+import { Modal, Spacer, Table, Button, Text, Collapse, Input } from "@nextui-org/react";
 import React, { useState } from "react";
-import styles from './ClientModal.module.css'
-import CollapseForm from "../Collapse/CollapseForm";
 
 interface ClientModalProps {
     onCreate: (client: Customer) => void;
@@ -17,6 +15,9 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        console.log('handleSubmit called');
+        console.log(name, email, deferralDays, creditLimit);
+
 
         function generateRandomString(length: number) {
             let result = '';
@@ -48,23 +49,32 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                     account_number: '',
                     corr_account_number: '',
                     is_default: true,
-                    created_at: new Date().toISOString(),
-                    updated_at: new Date().toISOString(),
-                }]
-            }
+                    created_at: new Date().toString(),
+                    updated_at: new Date().toString(),
+                }],
+                created_at: new Date().toString(),
+                updated_at: new Date().toString(),
+            },
+            metadata: {
+                key: '',
+                volume: '',
+            },
+            created_at: new Date().toString(),
+            updated_at: new Date().toString(),
         };
+
         onCreate(client);
         setName('');
         setEmail('');
         setDeferralDays(0);
         setCreditLimit(0);
     };
-    
+
     return (
         <Modal
-            className={styles.modalWindow}
             scroll
-            width="600px"
+            blur
+            width="800px"
             aria-labelledby="modal-title"
             aria-describedby="modal-description"
             {...bindings}
@@ -76,24 +86,37 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
             </Modal.Header>
             <form onSubmit={handleSubmit}>
                 <Modal.Body>
-                    <Collapse.Group>
-                        <Collapse title="Детали Клиента:">
+                    <Collapse.Group >
+                        <Collapse expanded title="Детали Клиента:">
                             <Input
+                                id="1"
                                 label="Имя:"
                                 type="text"
                                 value={name}
                                 onChange={(event) => setName(event.target.value)}
                                 required
+                                bordered
+                                clearable
+                                width="400px"
+                                size="lg"
                                 autoFocus
                             />
+                            <Spacer x={1.5} />
                             <Input
+                                id="2"
                                 label="Email:"
                                 type="email"
                                 value={email}
                                 onChange={(event) => setEmail(event.target.value)}
                                 required
+                                bordered
+                                clearable
+                                width="400px"
+                                size="lg"
                             />
+                            <Spacer y={1.5} />
                             <Input
+                                id="3"
                                 label="Отсрочка (дни):"
                                 type="number"
                                 min="0"
@@ -101,8 +124,14 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                                 value={deferralDays.toString()}
                                 onChange={(event) => setDeferralDays(Math.max(Number(event.target.value), 0))}
                                 required
+                                bordered
+                                clearable
+                                width="400px"
+                                size="lg"
                             />
+                            <Spacer y={1.5} />
                             <Input
+                                id="4"
                                 label="Кредитный лимит:"
                                 type="number"
                                 min="0"
@@ -110,17 +139,19 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                                 value={creditLimit.toString()}
                                 onChange={(event) => setCreditLimit(Math.max(Number(event.target.value), 0))}
                                 required
+                                bordered
+                                clearable
+                                width="400px"
+                                size="lg"
                             />
                         </Collapse>
                     </Collapse.Group>
-                    <CollapseForm />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button auto flat color="error" onPress={onClose}>
                         Close
                     </Button>
-                    <Button auto type="submit" onPress={onClose}
-                    >
+                    <Button auto type="submit" onSubmit={onClose} >
                         Agree
                     </Button>
                 </Modal.Footer>
