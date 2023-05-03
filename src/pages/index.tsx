@@ -1,16 +1,36 @@
 import Head from 'next/head';
-import Image from 'next/image';
 import styles from '@/styles/Home.module.css';
 import React, { useState, useEffect } from 'react';
 import Table from '@/components/Table/Table';
-import CreateClient from '@/components/CreateClient/CreateClient';
-import { makeServer } from '../../server';
-import Menu from '@/components/Menu/Menu';
+import Header from '@/components/Header/Header';
 import { saveClientsToStorage, loadClientsFromStorage } from '@/pages/api/localStorage';
-
+interface Customer {
+  id: string;
+  name: string;
+  email: string;
+  deferral_days: number;
+  credit_limit?: number;
+  org?: {
+      id: string;
+      name: string;
+      inn: string;
+      kpp: string;
+      ogrn: string;
+      addr: string;
+      bank_accounts?: Array<{
+          id: string;
+          name: string;
+          bik: string;
+          account_number: string;
+          corr_account_number: string;
+          is_default: boolean;
+          created_at: string;
+          updated_at: string;
+      }>;    
+  }
+}
 
 function Home(): JSX.Element {
-  const [showModal, setShowModal] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [clients, setClients] = useState<Customer[]>([]);
 
@@ -23,7 +43,7 @@ function Home(): JSX.Element {
     };
 
     getClients();
-    const clientsFromStorage = loadClientsFromStorage();
+    const clientsFromStorage = loadClientsFromStorage() as Customer[];
     if (clientsFromStorage && clientsFromStorage.length) {
       setClients(clientsFromStorage);
     }
@@ -39,12 +59,7 @@ function Home(): JSX.Element {
   const handleAdd = (client: Customer) => {
     const newClients = [...clients, client];
     setClients(newClients);
-    setShowModal(false);
     saveClientsToStorage(newClients);
-  };
-
-  const handleClose = () => {
-    setShowModal(false);
   };
 
   const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -75,10 +90,10 @@ function Home(): JSX.Element {
     });
     setClients(updatedClients);
     saveClientsToStorage(updatedClients);
-  };
+  };  
 
+  
   const MemoizedTable = React.memo(Table);
-
   return (
     <>
       <Head>
@@ -88,21 +103,16 @@ function Home(): JSX.Element {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <Menu
-          setShowModal={setShowModal}
+        <Header
           searchText={searchText}
           setSearchText={setSearchText}
           handleSearch={handleSearch}
-          handleResetSearch={handleResetSearch} />
-
+          handleResetSearch={handleResetSearch} 
+          onCreate={handleAdd}
+          />
         <MemoizedTable
           clients={clients}
-          onSave={handleSave}/>
-        {showModal &&
-          <CreateClient
-            onCreate={handleAdd}
-            onClose={handleClose}
-          />}
+          onSave={handleSave} />
       </main>
     </>
   )

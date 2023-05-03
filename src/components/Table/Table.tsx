@@ -2,14 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './Table.module.css'
 import { FaCopy } from 'react-icons/fa';
 
-
-interface TableProps {
-    clients: Customer[];
-    onSort?: (field: keyof Customer) => void;
-    onSave: (editedClient: Customer) => void;
-}
-
-const Table: React.FC<TableProps> = ({ clients = [], onSort }) => {
+const Table: React.FC<TableProps> = ({ clients = [], onSort, onSave }) => {
     const COLUMNS = [
         { field: 'name', header: 'Имя' },
         { field: 'id', header: 'ID' },
@@ -45,20 +38,23 @@ const Table: React.FC<TableProps> = ({ clients = [], onSort }) => {
             onSort(field);
         }
     };
+    const handleSave = (editedClient: Customer) => {
+        onSave(editedClient); // Ошибка 2: onSave не вызывается в обработчике
+    };
     // Сортированный массив клиентов
     const sortedClients = React.useMemo(() => {
-        const sorted = [...clients].sort((a, b) => {
-            if (a[sortField] < b[sortField]) {
-                return sortOrder === 'asc' ? -1 : 1;
-            }
-            if (a[sortField] > b[sortField]) {
-                return sortOrder === 'asc' ? 1 : -1;
-            }
-            return 0;
-        });
+        const sorted = [...clients]
+            .sort((a, b) => {
+                if ((a as any)[sortField] < (b as any)[sortField]) {
+                    return sortOrder === 'asc' ? -1 : 1;
+                }
+                if ((a as any)[sortField] > (b as any)[sortField]) {
+                    return sortOrder === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
         return sorted;
     }, [clients, sortField, sortOrder]);
-
 
     return (
         <>
@@ -89,7 +85,6 @@ const Table: React.FC<TableProps> = ({ clients = [], onSort }) => {
                             <td className={styles.tableCell}>{new Date(client.updated_at).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })}</td>
                         </tr>
                     ))}
-
                 </tbody>
             </table>
             {isCopied && <span className={styles.copyText} >Скопировано в буфер</span>}

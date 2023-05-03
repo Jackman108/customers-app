@@ -2,32 +2,52 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import styles from './CreateClient.module.css'
 
-type ClientProps = {
-    onCreate: (client: Customer) => void;
-    onClose: () => void;
-    modalRoot?: Element;
-};
-
-const CreateClient: React.FC<ClientProps> = ({ onCreate, onClose, modalRoot = document.body }) => {
+const CreateClient: React.FC<CreateClientProps> = ({ onCreate, onClose, modalRoot = document.body }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [deferralDays, setDeferralDays] = useState('');
+    const [deferralDays, setDeferralDays] = useState<number>(0);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
+        function generateRandomString(length: number) {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            for (let i = 0; i < length; i++) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+
         const client: Customer = {
-            id: Math.floor(Math.random() * 1000),
+            id: generateRandomString(10),
             name,
             email,
-            deferral_days: parseInt(deferralDays),
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+            deferral_days: deferralDays,
+            org: {
+                id: '',
+                name: '',
+                inn: '',
+                kpp: '',
+                ogrn: '',
+                addr: '',
+                bank_accounts: [ {
+                    id: '',
+                    name: '',
+                    bik: '',
+                    account_number: '',
+                    corr_account_number: '',
+                    is_default: true,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
+                }]
+            }
         };
         onCreate(client);
         setName('');
         setEmail('');
-        setDeferralDays('');
+        setDeferralDays(Number);
     };
     const handleClose = () => {
         onClose();
@@ -71,8 +91,8 @@ const CreateClient: React.FC<ClientProps> = ({ onCreate, onClose, modalRoot = do
                             type="number"
                             min="0"
                             step="1"
-                            value={deferralDays}
-                            onChange={(event) => setDeferralDays(event.target.value)}
+                            value={deferralDays.toString()}
+                            onChange={(event) => setDeferralDays(Math.max(Number(event.target.value), 0))}
                             required
                         />
                     </label>

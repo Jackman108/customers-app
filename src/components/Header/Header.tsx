@@ -1,23 +1,30 @@
-import { Input, Button } from '@nextui-org/react';
 import { GrSearch } from 'react-icons/gr';
-import styles from './Menu.module.css'
+import styles from './Header.module.css'
+import { Modal, useModal, Button, Text, Collapse, Input } from "@nextui-org/react";
+import ClientModal from '@/components/ClientModal/ClientModal';
 
-
-type MenuProps = {
+interface HeaderProps {
     searchText: string;
     setSearchText: React.Dispatch<React.SetStateAction<string>>;
     handleSearch: (event: React.FormEvent<HTMLFormElement>) => void;
     handleResetSearch: () => void;
-    setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
+    onCreate: (client: Customer) => void;
 };
 
-const Menu: React.FC<MenuProps> = ({
+const Header: React.FC<HeaderProps> = ({
     searchText,
     setSearchText,
     handleSearch,
     handleResetSearch,
-    setShowModal,
+    onCreate,
 }) => {
+    const { bindings, setVisible } = useModal();
+
+    const handleClose = () => {
+        bindings.onClose();
+    };
+
+
     return (
         <header className={styles.menu}>
             <h1 className={styles.title}>Клиенты</h1>
@@ -42,13 +49,19 @@ const Menu: React.FC<MenuProps> = ({
                     &times;
                 </button>
             </form>
-            <button
-                className={styles.addButton}
-                onClick={() => setShowModal(true)}>
-                + Добавить клиента
-            </button>
+            <Button
+                auto shadow color="secondary" onPress={() => setVisible(true)}>
+                +Add client
+            </Button>
+            <ClientModal
+                onCreate={onCreate}
+                bindings={bindings}
+                onClose={handleClose}
+
+            />
+
         </header>
     );
 };
 
-export default Menu;
+export default Header;
