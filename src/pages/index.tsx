@@ -7,6 +7,8 @@ import Header from '@/components/Header/Header';
 function Home(): JSX.Element {
   const [searchText, setSearchText] = useState('');
   const [clients, setClients] = useState<Customer[]>([]);
+  const [filteredClients, setFilteredClients] = useState<Customer[]>([]);
+
 
   useEffect(() => {
     const getClients = async () => {
@@ -27,24 +29,24 @@ function Home(): JSX.Element {
   useEffect(() => {
     const filteredClients = searchText ? clients.filter((client) =>
       client.name.toLowerCase().includes(searchText.toLowerCase())
-      ) : clients;
-    setClients(filteredClients);
-  }, [searchText, clients]);
+      ) : JSON.parse(JSON.stringify(clients));
+      setFilteredClients(filteredClients);
+    }, [searchText, clients]);
+
+  const handleSearch = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+  };
+
+  const handleResetSearch = (): void => {
+    setSearchText('');
+  };
 
   const handleAdd = (client: Customer) => {
     const newClients = Array.isArray(clients) ? [...clients, client] : [client];
     setClients(newClients);
   };
 
-  const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
-
-  const handleResetSearch = () => {
-    setSearchText('');
-  };
-
-  const handleSave = (editedClient: Customer) => {
+  const handleSave = (editedClient: Customer): void => {
     const updatedClients = clients.map((client) => {
       if (client.id === editedClient.id) {
         return editedClient;
@@ -52,8 +54,9 @@ function Home(): JSX.Element {
         return client;
       }
     });
-    setClients(updatedClients);
-  };
+
+    setClients([...updatedClients]);
+  };  
 
   const MemoizedTable = React.memo(Table);
   return (
@@ -73,7 +76,7 @@ function Home(): JSX.Element {
           onCreate={handleAdd}
         />
         <MemoizedTable
-          clients={clients}
+          clients={filteredClients}
           onSave={handleSave} />
       </main>
     </>

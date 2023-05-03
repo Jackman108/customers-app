@@ -49,16 +49,17 @@ const Header: React.FC<HeaderProps> = ({
                     &times;
                 </button>
             </form>
-            <Button
-                auto shadow color="secondary" onPress={() => setVisible(true)}>
-                +Add client
-            </Button>
+            <div>
+                <Button
+                    auto shadow color="secondary" onPress={() => setVisible(true)}>
+                    +Add client
+                </Button>
+            </div>
             <ClientModal
                 onCreate={onCreate}
                 bindings={bindings}
                 onClose={handleClose}
             />
-
         </header>
     );
 };
