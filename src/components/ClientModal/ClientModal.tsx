@@ -1,15 +1,18 @@
 import { Modal, Button, Text, Container, Collapse, Spacer } from "@nextui-org/react";
-import React, { useState, FormEvent } from "react";
+import React, { useState, FormEvent, memo } from "react";
 import ClientDetails from "../Collapse/ClientDetails";
 import OrganizationDetails from "../Collapse/OrganizationDetails";
 import generateRandomString from "../helpers/randomString";
+import BankAccounts from "../Collapse/BankAccounts";
 interface ClientModalProps {
     onCreate: (client: Customer) => void;
     onClose: () => void;
     bindings?: { open: boolean; onClose: () => void; };
 }
 
-function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }: ClientModalProps) {
+const MemoizedBankAccountsForm = memo(BankAccounts);
+
+function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }: ClientModalProps): JSX.Element {
     const [id, setId] = useState<string>(generateRandomString(10));
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
@@ -20,23 +23,38 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
     const [kpp, setKpp] = useState<string>('');
     const [ogrn, setOgrn] = useState<string>('');
     const [addr, setAddress] = useState<string>('');
+    const [bankName, setBankName] = useState<string>('');
+    const [account, setAccount] = useState<string>('');
+    const [bik, setBik] = useState<string>('');
+    const [corrAccount, setCorrAccount] = useState<string>('');
+    const [isDefault, setIsDefault] = useState<boolean>(true);
+
     const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         console.log('handleSubmit called');
-        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr);
+        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr, bankName, account, bik, corrAccount, isDefault,);
 
-        const formIsValid =
-            name.trim() !== "" &&
-            email.trim() !== "" &&
-            deferralDays > 0 &&
-            creditLimit > 0 &&
-            orgName.trim() !== "" &&
-            inn.trim() !== "" &&
-            kpp.trim() !== "" &&
-            ogrn.trim() !== "" &&
-            addr.trim() !== "";
+        const validateForm = () => {
+            const requiredFields = [
+                name,
+                email,
+                orgName,
+                inn,
+                kpp,
+                ogrn,
+                addr,
+                bankName,
+                account,
+                bik,
+                corrAccount,
+            ];
+            return requiredFields.every((field) => field.trim() !== "");
+        };
+        const formIsValid = isDefault !== (false) && deferralDays > 0 && creditLimit > 0 && validateForm();
+
+
         if (formIsValid) {
             const id = generateRandomString(10);
             const newDate = new Date().toString();
@@ -49,18 +67,18 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                 credit_limit: creditLimit,
                 org: {
                     id,
-                    name,
+                    name: orgName,
                     inn,
                     kpp,
                     ogrn,
                     addr,
                     bank_accounts: [{
                         id,
-                        name: '',
-                        bik: '',
-                        account_number: '',
-                        corr_account_number: '',
-                        is_default: true,
+                        name: bankName,
+                        bik,
+                        account_number: account,
+                        corr_account_number: corrAccount,
+                        is_default: isDefault,
                         created_at: newDate,
                         updated_at: newDate,
                     }],
@@ -84,6 +102,11 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
             setKpp('');
             setOgrn('');
             setAddress('');
+            setBankName('');
+            setAccount('');
+            setBik('');
+            setCorrAccount('');
+            setIsDefault(true)
             setFormIsValid(false);
             onClose();
         }
@@ -104,7 +127,7 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                 </Text>
             </Modal.Header>
             <form onSubmit={handleSubmit}>
-                <Modal.Body                  
+                <Modal.Body
                 >
                     <Container id="modal-description">
                         <Collapse.Group >
@@ -134,6 +157,22 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                                 onAddressChange={setAddress}
                             />
                             <Spacer y={1.5} />
+
+                            <Spacer y={1.5} />
+                            <MemoizedBankAccountsForm
+                                id={id}
+                                name={bankName}
+                                account={account}
+                                bik={bik}
+                                corrAccount={corrAccount}
+                                isDefault={isDefault}
+                                onNameChange={setBankName}
+                                onAccountChange={setAccount}
+                                onBikChange={setBik}
+                                onCorrAccountChange={setCorrAccount}
+                                onIsDefaultChange={setIsDefault} 
+                                onDelete={onClose}
+                                />
                         </Collapse.Group>
                     </Container>
                 </Modal.Body>
@@ -141,10 +180,10 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                     <Button auto flat color="error" onPress={onClose}>
                         Close
                     </Button>
-                    <Button                    
-                    auto 
-                    type="submit" 
-                    onSubmit={onClose} >
+                    <Button
+                        auto
+                        type="submit"
+                        onSubmit={onClose} >
                         Agree
                     </Button>
                 </Modal.Footer>
