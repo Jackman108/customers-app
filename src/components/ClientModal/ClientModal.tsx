@@ -3,16 +3,16 @@ import React, { useState, FormEvent, memo } from "react";
 import ClientDetails from "../Collapse/ClientDetails";
 import OrganizationDetails from "../Collapse/OrganizationDetails";
 import generateRandomString from "../helpers/randomString";
-import BankAccounts from "../Collapse/BankAccounts";
+import BankAccounts, { BankAccount } from "../Collapse/BankAccounts";
+import BankAccountsForm from "../Collapse/BankAccountsForm";
 interface ClientModalProps {
     onCreate: (client: Customer) => void;
     onClose: () => void;
+    onAddAccount: () => void;
     bindings?: { open: boolean; onClose: () => void; };
 }
-
-const MemoizedBankAccountsForm = memo(BankAccounts);
-
-function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }: ClientModalProps): JSX.Element {
+const MemoizedBankAccountsForm = memo(BankAccountsForm);
+function ClientModal({ onAddAccount, onCreate, onClose, bindings = { open: false, onClose } }: ClientModalProps): JSX.Element {
     const [id, setId] = useState<string>(generateRandomString(10));
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
@@ -24,18 +24,18 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
     const [ogrn, setOgrn] = useState<string>('');
     const [addr, setAddress] = useState<string>('');
     const [bankName, setBankName] = useState<string>('');
-    const [account, setAccount] = useState<string>('');
+    const [accountNum, setAccountNum] = useState<string>('');
     const [bik, setBik] = useState<string>('');
     const [corrAccount, setCorrAccount] = useState<string>('');
     const [isDefault, setIsDefault] = useState<boolean>(true);
-
     const [formIsValid, setFormIsValid] = useState<boolean>(false);
+    const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+
 
     const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         console.log('handleSubmit called');
-        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr, bankName, account, bik, corrAccount, isDefault,);
-
+        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr, bankName, accountNum, bik, corrAccount, isDefault,);
         const validateForm = () => {
             const requiredFields = [
                 name,
@@ -46,19 +46,16 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                 ogrn,
                 addr,
                 bankName,
-                account,
+                accountNum,
                 bik,
                 corrAccount,
             ];
             return requiredFields.every((field) => field.trim() !== "");
         };
         const formIsValid = isDefault !== (false) && deferralDays > 0 && creditLimit > 0 && validateForm();
-
-
         if (formIsValid) {
             const id = generateRandomString(10);
             const newDate = new Date().toString();
-
             const client: Customer = {
                 id,
                 name,
@@ -76,7 +73,7 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                         id,
                         name: bankName,
                         bik,
-                        account_number: account,
+                        account_number: accountNum,
                         corr_account_number: corrAccount,
                         is_default: isDefault,
                         created_at: newDate,
@@ -103,7 +100,7 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
             setOgrn('');
             setAddress('');
             setBankName('');
-            setAccount('');
+            setAccountNum('');
             setBik('');
             setCorrAccount('');
             setIsDefault(true)
@@ -142,7 +139,7 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                                 onDeferralDaysChange={setDeferralDays}
                                 onCreditLimitChange={setCreditLimit}
                             />
-                            <Spacer y={1.5} />
+                            <Spacer y={2} />
                             <OrganizationDetails
                                 id={id}
                                 name={orgName}
@@ -156,23 +153,12 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
                                 onOgrnChange={setOgrn}
                                 onAddressChange={setAddress}
                             />
-                            <Spacer y={1.5} />
-
-                            <Spacer y={1.5} />
-                            <MemoizedBankAccountsForm
-                                id={id}
-                                name={bankName}
-                                account={account}
-                                bik={bik}
-                                corrAccount={corrAccount}
-                                isDefault={isDefault}
-                                onNameChange={setBankName}
-                                onAccountChange={setAccount}
-                                onBikChange={setBik}
-                                onCorrAccountChange={setCorrAccount}
-                                onIsDefaultChange={setIsDefault} 
-                                onDelete={onClose}
-                                />
+                            <Spacer y={2} />
+                            <MemoizedBankAccountsForm                            
+                            onAccountsChange={setBankAccounts} 
+                            accounts={bankAccounts}
+                            />
+                            <Spacer y={2} />
                         </Collapse.Group>
                     </Container>
                 </Modal.Body>
@@ -191,5 +177,4 @@ function ClientModal({ onCreate, onClose, bindings = { open: false, onClose } }:
         </Modal>
     );
 }
-
 export default ClientModal;
