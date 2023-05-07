@@ -1,20 +1,20 @@
 import { Container, Input, Spacer, Switch, Button, Text } from "@nextui-org/react";
 import React, { useState, FC } from "react";
 
-export interface BankAccountProps {
+export interface BankAccountItems {
     id: string;
     name: string;
     accountNum: string;
     bik: string;
     corrAccount: string;
     isDefault: boolean;
-    }
-    
-    export interface BankAccountItemProps {
-    account: BankAccountProps;
-    onAccountChange: (updatedAccount: BankAccountProps) => void;
+}
+
+export interface BankAccountItemProps {
+    account: BankAccountItems;
+    onAccountChange: (updatedAccount: BankAccountItems) => void;
     onSwitchChange: (id: string, isDefault: boolean) => void;
-    }
+}
 
 const BankAccountItem: FC<BankAccountItemProps> = ({
     account,
@@ -37,7 +37,7 @@ const BankAccountItem: FC<BankAccountItemProps> = ({
     };
 
     return (
-        <Container        >
+        <>
             <Text h6 size={15} css={{ m: 0 }}>
                 Новый счёт: {id}
             </Text>
@@ -124,7 +124,7 @@ const BankAccountItem: FC<BankAccountItemProps> = ({
                 color={"secondary"}
             />
             <Spacer y={1.5} />
-        </Container>
+        </>
     );
 }
 export default BankAccountItem;

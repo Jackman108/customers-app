@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button, Collapse, Container, Spacer } from '@nextui-org/react';
 import generateRandomString from '../helpers/randomString';
-import BankAccountItem, { BankAccountItemProps, BankAccountProps } from './BankAccountItem';
+import BankAccountItem, { BankAccountItemProps, BankAccountItems } from './BankAccountItem';
 
-interface BankAccountsFormProps {
+export interface BankAccountsFormProps {
     accounts: BankAccountItemProps['account'][];
     onAccountsChange: (updatedAccounts: BankAccountItemProps['account'][]) => void;
 }
@@ -20,7 +20,7 @@ const BankAccountsForm: React.FC<BankAccountsFormProps> = ({
 
     useEffect(() => {
         if (accounts.length === 0) {
-            const newAccount: BankAccountProps = {
+            const newAccount: BankAccountItems = {
                 id: generateRandomString(8),
                 name: '',
                 accountNum: '',
@@ -42,7 +42,7 @@ const BankAccountsForm: React.FC<BankAccountsFormProps> = ({
     }, [accounts, onAccountsChange]);
 
     const handleAddAccountClick = () => {
-        const newAccount: BankAccountProps = {
+        const newAccount: BankAccountItems = {
             id: generateRandomString(8),
             name: '',
             accountNum: '',
@@ -71,7 +71,7 @@ const BankAccountsForm: React.FC<BankAccountsFormProps> = ({
             if (accountIndex === -1) {
                 return;
             }
-            const newAccounts: BankAccountProps[] = [...accounts];
+            const newAccounts: BankAccountItems[] = [...accounts];
             newAccounts.forEach((account) => (account.isDefault = false));
             newAccounts[accountIndex].isDefault = isDefault;
             setDefaultAccountBlocked(!isDefault);
@@ -82,7 +82,7 @@ const BankAccountsForm: React.FC<BankAccountsFormProps> = ({
 
     const handleDeleteAccount = useCallback((id: string) => {
         const deletedAccount = accounts.find((account) => account.id === id);
-        const newAccounts: BankAccountProps[] = accounts.filter((account) => account.id !== id);
+        const newAccounts: BankAccountItems[] = accounts.filter((account) => account.id !== id);
         if (deletedAccount && deletedAccount.isDefault) {
             newAccounts[0].isDefault = true;
         }

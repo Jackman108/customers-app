@@ -3,38 +3,57 @@ import React, { useState, FormEvent, memo } from "react";
 import ClientDetails from "../Collapse/ClientDetails";
 import OrganizationDetails from "../Collapse/OrganizationDetails";
 import generateRandomString from "../helpers/randomString";
-import { BankAccount } from "../Collapse/BankAccounts";
 import BankAccountsForm from "../Collapse/BankAccountsForm";
+import { BankAccountItems } from "../Collapse/BankAccountItem";
+import BackupEmails from "../Collapse/SpareEmails";
 interface ClientModalProps {
     handleAddClient: (client: Customer) => void;
     onClose: () => void;
     bindings?: { open: boolean; onClose: () => void; };
 }
 const MemoizedBankAccountsForm = memo(BankAccountsForm);
+
 function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClose } }: ClientModalProps): JSX.Element {
-    const [id, setId] = useState<string>(generateRandomString(10));
+    const [id, setId] = useState<string>(generateRandomString(8));
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [deferralDays, setDeferralDays] = useState<number>(0);
     const [creditLimit, setCreditLimit] = useState<number>(0);
+
     const [orgName, setOrgName] = useState<string>('');
     const [inn, setInn] = useState<string>('');
     const [kpp, setKpp] = useState<string>('');
     const [ogrn, setOgrn] = useState<string>('');
     const [addr, setAddress] = useState<string>('');
+
     const [bankName, setBankName] = useState<string>('');
     const [accountNum, setAccountNum] = useState<string>('');
     const [bik, setBik] = useState<string>('');
     const [corrAccount, setCorrAccount] = useState<string>('');
     const [isDefault, setIsDefault] = useState<boolean>(true);
-    const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+
+    const [backupEmail, setBackupEmail] = useState<string>('');
+
+    const [bankAccounts, setBankAccounts] = useState<BankAccountItems[]>([]);
+    const [backupEmails, setBackupEmails] = useState<BackupEmail[]>([]);
     const [formIsValid, setFormIsValid] = useState<boolean>(false);
     const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         console.log('handleSubmit called');
-        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr, bankAccounts);
-        const validateBankAccounts = (accounts: BankAccount[]): boolean => {
-            return accounts.every((account) => {
+        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr, bankAccounts, backupEmails);
+        const validateBackupEmails = (backupEmails: BackupEmail[]): boolean => {
+            return backupEmails.every((emails) => {
+                const { id, email } = emails;
+                return (
+                    typeof id === 'string' &&
+                    typeof email === 'string' &&
+                    id.trim() !== '' &&
+                    email.trim() !== ''
+                );
+            });
+        };
+        const validateBankAccounts = (bankAccounts: BankAccountItems[]): boolean => {
+            return bankAccounts.every((account) => {
                 const { name, accountNum, bik, corrAccount } = account;
                 return (
                     typeof id === 'string' &&
@@ -47,15 +66,21 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                     name.trim() !== '' &&
                     accountNum.trim() !== '' &&
                     bik.trim() !== '' &&
-                    corrAccount.trim() !== ''&&
+                    corrAccount.trim() !== '' &&
                     isDefault !== false
                 );
             });
         };
-        const validateForm = () => {
+        const validateDetails = () => {
             const customerFields = [
                 name,
                 email,
+            ];
+            const requiredFields = [...customerFields];
+            return requiredFields.every((field) => field.trim() !== "");
+        };
+        const validateOrg = () => {
+            const customerFields = [
                 orgName,
                 inn,
                 kpp,
@@ -65,13 +90,19 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
             const requiredFields = [...customerFields];
             return requiredFields.every((field) => field.trim() !== "");
         };
-
-        const formIsValid = validateForm() && validateBankAccounts(bankAccounts);
+        const formIsValid =
+            validateDetails() &&
+            validateOrg() &&
+            validateBankAccounts(bankAccounts) &&
+            validateBackupEmails(backupEmails);
         if (formIsValid) {
             console.log('formIsValid');
-            const id = generateRandomString(10);
             const newDate = new Date().toString();
-            const bankAccountsArr = [{
+            const backupEmail: BackupEmail[] = [{
+                id,
+                email: '',
+            }];
+            const bankAccountsArr: BankAccount[] = [{
                 id,
                 name: bankName,
                 bik,
@@ -81,29 +112,31 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                 created_at: newDate,
                 updated_at: newDate,
             }];
+            const organization: Org = {
+                id,
+                name: orgName,
+                inn,
+                kpp,
+                ogrn,
+                addr,
+                bank_accounts: bankAccountsArr,
+                created_at: newDate,
+                updated_at: newDate,
+            };
             const client: Customer = {
                 id,
                 name,
                 email,
                 deferral_days: deferralDays,
                 credit_limit: creditLimit,
-                org: {
-                    id,
-                    name: orgName,
-                    inn,
-                    kpp,
-                    ogrn,
-                    addr,
-                    bank_accounts: bankAccountsArr,
-                    created_at: newDate,
-                    updated_at: newDate,
-                },
+                org: organization,
                 metadata: {
                     key: '',
                     volume: '',
                 },
                 created_at: newDate,
                 updated_at: newDate,
+                backupEmails: backupEmail,
             };
             handleAddClient(client);
             setName('');
@@ -120,7 +153,9 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
             setBik('');
             setCorrAccount('');
             setIsDefault(true);
+            setBackupEmail('');
             setBankAccounts([]);
+            setBackupEmails([]);
             setFormIsValid(false);
             onClose();
         }
@@ -141,8 +176,7 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                         Добавление клиента
                     </Text>
                 </Modal.Header>
-                <Modal.Body
-                >
+                <Modal.Body>
                     <Container id="modal-description">
                         <Collapse.Group >
                             <ClientDetails
@@ -172,8 +206,13 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                             />
                             <Spacer y={2} />
                             <MemoizedBankAccountsForm
-                                onAccountsChange={setBankAccounts}
                                 accounts={bankAccounts}
+                                onAccountsChange={setBankAccounts}
+                            />
+                            <Spacer y={2} />
+                            <BackupEmails
+                                emails={backupEmails}
+                                onEmailsChange={setBackupEmails}
                             />
                             <Spacer y={2} />
                         </Collapse.Group>
@@ -186,8 +225,7 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                     <Button
                         auto
                         type="submit"
-                        onSubmit={onClose}
-                    >
+                        onSubmit={onClose}>
                         Agree
                     </Button>
                 </Modal.Footer>

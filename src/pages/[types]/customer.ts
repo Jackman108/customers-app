@@ -4,30 +4,37 @@ interface Customer {
     email: string;
     deferral_days: number;
     credit_limit?: number;
-    org?: {
-        id: string;
-        name: string;
-        inn: string;
-        kpp: string;
-        ogrn: string;
-        addr: string;
-        bank_accounts?: Array<{
-            id: string;
-            name: string;
-            bik: string;
-            account_number: string;
-            corr_account_number: string;
-            is_default: boolean;
-            created_at: string;
-            updated_at: string;
-        }>;
-        created_at: string;
-        updated_at: string;
-    },
+    org: Org;
     metadata?: {
         key: string;
         volume: string;
-    },
+    };
+    created_at: string;
+    updated_at: string;
+    backupEmails?: BackupEmail[];
+}
+interface Org {
+    id: string;
+    name: string;
+    inn: string;
+    kpp: string;
+    ogrn: string;
+    addr: string;
+    bank_accounts: BankAccount[];
     created_at: string;
     updated_at: string;
 }
+interface BankAccount {
+    id: string;
+    name: string;
+    bik: string;
+    account_number: string;
+    corr_account_number: string;
+    is_default: boolean;
+    created_at?: string;
+    updated_at?: string;
+}
+interface BackupEmail {
+    id: string;
+    email: string;
+    }
