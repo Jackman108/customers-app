@@ -8,7 +8,7 @@ interface HeaderProps {
     setSearchText: React.Dispatch<React.SetStateAction<string>>;
     handleSearch: (event: React.FormEvent<HTMLFormElement>) => void;
     handleResetSearch: () => void;
-    onCreate: (client: Customer) => void;
+    handleAddClient: (client: Customer) => void;
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -16,15 +16,13 @@ const Header: React.FC<HeaderProps> = ({
     setSearchText,
     handleSearch,
     handleResetSearch,
-    onCreate,
+    handleAddClient,
 }) => {
     const { bindings, setVisible } = useModal();
-
     const handleClose = () => {
         bindings.onClose();
     };
-
-
+    
     return (
         <header className={styles.menu}>
             <h1 className={styles.title}>Клиенты</h1>
@@ -56,7 +54,7 @@ const Header: React.FC<HeaderProps> = ({
                 </Button>
             </div>
             <ClientModal
-                onCreate={onCreate}
+                handleAddClient={handleAddClient}
                 bindings={bindings}
                 onClose={handleClose}
             />

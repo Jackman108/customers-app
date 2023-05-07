@@ -41,7 +41,7 @@ function Home(): JSX.Element {
     setSearchText('');
   };
 
-  const handleAdd = (client: Customer) => {
+  const handleAddClient = (client: Customer) => {
     const newClients = Array.isArray(clients) ? [...clients, client] : [client];
     setClients(newClients);
   };
@@ -73,7 +73,7 @@ function Home(): JSX.Element {
           setSearchText={setSearchText}
           handleSearch={handleSearch}
           handleResetSearch={handleResetSearch}
-          onCreate={handleAdd}
+          handleAddClient={handleAddClient}
         />
         <MemoizedTable
           clients={filteredClients}
