@@ -5,7 +5,8 @@ import OrganizationDetails from "../Collapse/OrganizationDetails";
 import generateRandomString from "../helpers/randomString";
 import BankAccountsForm from "../Collapse/BankAccountsForm";
 import { BankAccountItems } from "../Collapse/BankAccountItem";
-import BackupEmails from "../Collapse/SpareEmails";
+import BackupEmails from "../Collapse/BackupEmails";
+import MetaData from "../Collapse/MetaData";
 interface ClientModalProps {
     handleAddClient: (client: Customer) => void;
     onClose: () => void;
@@ -32,15 +33,19 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
     const [corrAccount, setCorrAccount] = useState<string>('');
     const [isDefault, setIsDefault] = useState<boolean>(true);
 
-    const [backupEmail, setBackupEmail] = useState<string>('');
+    const [backupEmailItem, setBackupEmail] = useState<string>('');
+    const [key, setKey] = useState<string>('');
+    const [value, setValue] = useState<string>('');
 
     const [bankAccounts, setBankAccounts] = useState<BankAccountItems[]>([]);
     const [backupEmails, setBackupEmails] = useState<BackupEmail[]>([]);
+    const [metaData, setMetaData] = useState<MetaData[]>([]);
+
     const [formIsValid, setFormIsValid] = useState<boolean>(false);
     const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
         console.log('handleSubmit called');
-        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr, bankAccounts, backupEmails);
+        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr, bankAccounts, backupEmails, metaData);
         const validateBackupEmails = (backupEmails: BackupEmail[]): boolean => {
             return backupEmails.every((emails) => {
                 const { id, email } = emails;
@@ -49,6 +54,17 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                     typeof email === 'string' &&
                     id.trim() !== '' &&
                     email.trim() !== ''
+                );
+            });
+        };
+        const validateMetaData = (metaData: MetaData[]): boolean => {
+            return metaData.every((data) => {
+                const { key, value } = data;
+                return (
+                    typeof key === 'string' &&
+                    typeof value === 'string' &&
+                    key.trim() !== '' &&
+                    value.trim() !== ''
                 );
             });
         };
@@ -95,12 +111,17 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
             validateOrg() &&
             validateBankAccounts(bankAccounts) &&
             validateBackupEmails(backupEmails);
+        validateMetaData(metaData);
         if (formIsValid) {
             console.log('formIsValid');
             const newDate = new Date().toString();
             const backupEmail: BackupEmail[] = [{
                 id,
-                email: '',
+                email: backupEmailItem,
+            }];
+            const metaData: MetaData[] = [{
+                key,
+                value,
             }];
             const bankAccountsArr: BankAccount[] = [{
                 id,
@@ -123,6 +144,7 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                 created_at: newDate,
                 updated_at: newDate,
             };
+
             const client: Customer = {
                 id,
                 name,
@@ -130,14 +152,12 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                 deferral_days: deferralDays,
                 credit_limit: creditLimit,
                 org: organization,
-                metadata: {
-                    key: '',
-                    volume: '',
-                },
+                metadata: metaData,
                 created_at: newDate,
                 updated_at: newDate,
                 backupEmails: backupEmail,
             };
+
             handleAddClient(client);
             setName('');
             setEmail('');
@@ -154,8 +174,11 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
             setCorrAccount('');
             setIsDefault(true);
             setBackupEmail('');
+            setKey('');
+            setValue('');
             setBankAccounts([]);
             setBackupEmails([]);
+            setMetaData([]);
             setFormIsValid(false);
             onClose();
         }
@@ -213,6 +236,11 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                             <BackupEmails
                                 emails={backupEmails}
                                 onEmailsChange={setBackupEmails}
+                            />
+                            <Spacer y={2} />
+                            <MetaData
+                                metaData={metaData}
+                                onMetaChange={setMetaData}
                             />
                             <Spacer y={2} />
                         </Collapse.Group>

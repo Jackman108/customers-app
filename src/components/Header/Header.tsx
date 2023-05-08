@@ -50,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({
             <div>
                 <Button
                     auto shadow color="secondary" onPress={() => setVisible(true)}>
-                    +Add client
+                    +Добавить клиента
                 </Button>
             </div>
             <ClientModal

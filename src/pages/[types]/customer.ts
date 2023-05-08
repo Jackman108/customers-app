@@ -5,10 +5,7 @@ interface Customer {
     deferral_days: number;
     credit_limit?: number;
     org: Org;
-    metadata?: {
-        key: string;
-        volume: string;
-    };
+    metadata?: MetaData[];
     created_at: string;
     updated_at: string;
     backupEmails?: BackupEmail[];
@@ -23,6 +20,10 @@ interface Org {
     bank_accounts: BankAccount[];
     created_at: string;
     updated_at: string;
+}
+interface MetaData {
+    key: string;
+    value: string;
 }
 interface BankAccount {
     id: string;
