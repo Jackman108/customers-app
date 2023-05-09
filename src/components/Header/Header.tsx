@@ -1,6 +1,6 @@
 import { GrSearch } from 'react-icons/gr';
 import styles from './Header.module.css'
-import { Modal, useModal, Button, Text, Collapse, Input } from "@nextui-org/react";
+import { Modal, useModal, Button, Input } from "@nextui-org/react";
 import ClientModal from '@/components/ClientModal/ClientModal';
 
 interface HeaderProps {
@@ -22,37 +22,37 @@ const Header: React.FC<HeaderProps> = ({
     const handleClose = () => {
         bindings.onClose();
     };
-    
+
     return (
         <header className={styles.menu}>
             <h1 className={styles.title}>Клиенты</h1>
             <form onSubmit={handleSearch}
                 className={styles.content}>
-                <input
+                <Input
                     className={styles.input}
                     type="text"
                     placeholder="Поиск"
                     value={searchText}
                     onChange={(event) => setSearchText(event.target.value)}
                 />
-                <button
+                <Button
+                    ghost auto
                     className={styles.button}
                     type="submit">
                     <GrSearch />
-                </button>
-                <button
+                </Button>
+                <Button
+                    ghost auto color="error"
                     className={styles.button}
                     type="button"
                     onClick={handleResetSearch}>
                     &times;
-                </button>
-            </form>
-            <div>
+                </Button>
                 <Button
                     auto shadow color="secondary" onPress={() => setVisible(true)}>
-                    +Добавить клиента
+                    + Добавить клиента
                 </Button>
-            </div>
+            </form>
             <ClientModal
                 handleAddClient={handleAddClient}
                 bindings={bindings}

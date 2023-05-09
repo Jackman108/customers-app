@@ -9,9 +9,10 @@
 }
 
 .content {
-    margin-left: auto;
-
+    display: flex;
+   gap: 10px;
 }
+
 
 .input {
     width: 250px;
@@ -19,28 +20,4 @@
     border-radius: 5px;
     height: 30px;
     padding: 5px;
-    margin: 0 2px;
-
-}
-
-.button {
-    width: 30px;
-    height: 30px;
-    border: 1px solid rgba(11, 11, 11, 0.872);
-    border-radius: 5px;
-    margin: 0 2px;
-    align-items: center;
-
-}
-
-.addButton {
-    height: 35px;
-    border: 1px solid white;
-    border-radius: 5px;
-    margin: 0 20px 0 2px;
-    align-items: center;
-    background-color: rgba(55, 158, 255, 1);
-    color: white;
-
-
 }
