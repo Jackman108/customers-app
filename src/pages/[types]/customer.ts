@@ -1,23 +1,23 @@
 interface Customer {
-    id: string;
+    id?: string;
     name: string;
     email: string;
     deferral_days: number;
-    credit_limit?: number;
-    org: Org;
-    metadata?: MetaData[];
+    credit_limit: number;
+    org: OrgDetails;
+    metadata: MetaData[];
     created_at: string;
     updated_at: string;
-    backupEmails?: BackupEmail[];
+    backupEmails: BackupEmail[];
 }
-interface Org {
-    id: string;
+interface OrgDetails {
+    id?: string;
     name: string;
     inn: string;
     kpp: string;
     ogrn: string;
     addr: string;
-    bank_accounts: BankAccount[];
+    bank_accounts?: BankAccount[];
     created_at: string;
     updated_at: string;
 }
@@ -32,8 +32,8 @@ interface BankAccount {
     account_number: string;
     corr_account_number: string;
     is_default: boolean;
-    created_at?: string;
-    updated_at?: string;
+    created_at: string;
+    updated_at: string;
 }
 interface BackupEmail {
     id: string;

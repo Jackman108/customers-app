@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback, useRef, FC } from 'react';
+import React, { useState, useEffect, useCallback, FC } from 'react';
 import { Button, Collapse, Container, Spacer, Input, Col, Row } from '@nextui-org/react';
-
 
 
 export interface BackupEmailProps {
@@ -12,6 +11,19 @@ const BackupEmails: FC<BackupEmailProps> = ({
     emails,
     onEmailsChange = () => { },
 }) => {
+    const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
+
+    useEffect(() => {
+        if (emails.length === 0) {
+            const newEmail: BackupEmail = {
+                id: '1',
+                email: '',
+            };
+            onEmailsChange([newEmail]);
+        }
+        setIsCollapsed(true);
+    }, [emails, onEmailsChange]);
+
     const handleAddEmail = useCallback(() => {
         const newEmail: BackupEmail = {
             id: String(emails.length + 1),
@@ -19,12 +31,13 @@ const BackupEmails: FC<BackupEmailProps> = ({
         };
         const updatedEmails = [...emails, newEmail];
         onEmailsChange(updatedEmails);
+        setIsCollapsed(false);
     }, [emails, onEmailsChange]);
 
     const handleDeleteEmail = useCallback((id: string) => {
-        const deletedEmail = emails.find((email) => email.id === id);
         const updatedEmails: BackupEmail[] = emails.filter((email) => email.id !== id);
         onEmailsChange(updatedEmails);
+        setIsCollapsed(false);
     }, [emails, onEmailsChange]);
 
     const handleEmailChange = useCallback(
@@ -39,17 +52,9 @@ const BackupEmails: FC<BackupEmailProps> = ({
         },
         [emails, onEmailsChange]
     );
-    useEffect(() => {
-        if (emails.length === 0) {
-            const newEmail: BackupEmail = {
-                id: '1',
-                email: '',
-            };
-            onEmailsChange([newEmail]);
-        }
-    }, [emails, onEmailsChange]);
+
     return (
-        <Collapse expanded title="Emails для счетов:">
+        <Collapse expanded={isCollapsed} title="Emails для счетов:">
             {emails.map((email, index) => (
                 <Container key={email.id} >
                     <Spacer y={1.5} />
@@ -74,7 +79,7 @@ const BackupEmails: FC<BackupEmailProps> = ({
                         <Spacer  x={4} />
                         <Col>
                             {emails.length > 1 && index > 0 && (
-                                <Button ghost auto color="warning"
+                                <Button ghost auto color="error"
                                     onPress={() => handleDeleteEmail(email.id)}                    >
                                     Удалить счет
                                 </Button>
@@ -83,9 +88,9 @@ const BackupEmails: FC<BackupEmailProps> = ({
                     </Row>
                 </Container>
             ))}
-            <Spacer y={1.5} />
-            <Button auto color="success" onPress={handleAddEmail}>
-                Добавить счет
+            <Spacer y={2} />
+            <Button auto onPress={handleAddEmail}>
+                Добавить Email
             </Button>
             <Spacer y={1.5} />
         </Collapse>

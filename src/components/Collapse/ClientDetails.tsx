@@ -1,29 +1,16 @@
 import { Collapse, Input, Spacer, Container } from "@nextui-org/react";
-import React from "react";
+import React, { FC } from "react";
 
-interface ClientDetailsProps {
-    id: string;
-    name: string;
-    email: string;
-    deferralDays: number;
-    creditLimit: number;
-    onNameChange: (name: string) => void;
-    onEmailChange: (email: string) => void;
-    onDeferralDaysChange: (days: number) => void;
-    onCreditLimitChange: (limit: number) => void;
+export interface ClientDetailsProps {
+    details: Customer;
+    onDetailsChange: (updatedDetails: Customer) => void;
 }
+const ClientDetails: FC<ClientDetailsProps> = ({
+    details,
+    onDetailsChange,
+}) => {
+    const { id, name, email, deferral_days: deferralDays, credit_limit: creditLimit } = details;
 
-function ClientDetails({
-    id,
-    name,
-    email,
-    deferralDays,
-    creditLimit,
-    onNameChange,
-    onEmailChange,
-    onDeferralDaysChange,
-    onCreditLimitChange,
-}: ClientDetailsProps) {
     return (
         <Collapse expanded title="Детали Клиента:">
             <Container >
@@ -33,7 +20,9 @@ function ClientDetails({
                     label="Имя:"
                     type="text"
                     value={name}
-                    onChange={(event) => onNameChange(event.target.value)}
+                    onChange={(event) =>
+                        onDetailsChange({ ...details, name: event.target.value })
+                    }
                     required={true}
                     bordered
                     clearable
@@ -49,7 +38,9 @@ function ClientDetails({
                     label="Email:"
                     type="email"
                     value={email}
-                    onChange={(event) => onEmailChange(event.target.value)}
+                    onChange={(event) =>
+                        onDetailsChange({ ...details, email: event.target.value })
+                    }
                     required={true}
                     bordered
                     clearable
@@ -68,11 +59,10 @@ function ClientDetails({
                     step="1"
                     value={deferralDays}
                     onChange={(event) =>
-                        onDeferralDaysChange
-                            (Math.max(Number(event.target.value), 0))
+                        onDetailsChange({ ...details, deferral_days: Math.max(Number(event.target.value), 0) })
                     }
                     required={true}
-                    bordered                    
+                    bordered
                     width="400px"
                     size="lg"
                     status={deferralDays === 0 ? "error" : undefined}
@@ -87,8 +77,8 @@ function ClientDetails({
                     min="0"
                     step="1"
                     value={creditLimit}
-                    onChange={(event) => onCreditLimitChange
-                        (Math.max(Number(event.target.value), 0))
+                    onChange={(event) =>
+                        onDetailsChange({ ...details, credit_limit: Math.max(Number(event.target.value), 0) })
                     }
                     required={true}
                     bordered

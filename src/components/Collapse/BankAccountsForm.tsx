@@ -12,48 +12,52 @@ const BankAccountsForm: React.FC<BankAccountsFormProps> = ({
     accounts,
     onAccountsChange
 }) => {
+    const [isCollapsed, setIsCollapsed] = useState<boolean>(true);
     const [defaultAccountBlocked, setDefaultAccountBlocked] = useState(() => {
-        return accounts.length > 1 ? accounts.some((account) => account.isDefault) : false;
+        return accounts.length > 1 ? accounts.some((account) => account.is_default) : false;
     });
     const [activeAccountId, setActiveAccountId] = useState(
         accounts.length > 0 ? accounts[0].id : '');
-
+        
     useEffect(() => {
         if (accounts.length === 0) {
             const newAccount: BankAccountItems = {
                 id: generateRandomString(8),
                 name: '',
-                accountNum: '',
+                account_number: '',
                 bik: '',
-                corrAccount: '',
-                isDefault: accounts.length === 0,
+                corr_account_number: '',
+                is_default: accounts.length === 0,
             };
             setDefaultAccountBlocked(true);
             onAccountsChange([newAccount]);
-        } else if (accounts.length > 0 && accounts[0].isDefault) {
+        } else if (accounts.length > 0 && accounts[0].is_default) {
             const newAccounts = [...accounts];
-            const addedAccount = newAccounts.find((account) => !account.isDefault);
+            const addedAccount = newAccounts.find((account) => !account.is_default);
             if (addedAccount) {
-                addedAccount.isDefault = false;
-                setDefaultAccountBlocked(accounts[0].isDefault);
+                addedAccount.is_default = false;
+                setDefaultAccountBlocked(accounts[0].is_default);
                 onAccountsChange(newAccounts);
-            }
+            } 
+            setIsCollapsed(true);           
         }
-    }, [accounts, onAccountsChange]);
+    }, [accounts.length, accounts[0]?.is_default || false, onAccountsChange]);
 
-    const handleAddAccountClick = () => {
+    const handleAddAccountClick = useCallback(() => {
         const newAccount: BankAccountItems = {
             id: generateRandomString(8),
             name: '',
-            accountNum: '',
+            account_number: '',
             bik: '',
-            corrAccount: '',
-            isDefault: false,
+            corr_account_number: '',
+            is_default: false,
         };
         const newAccounts = [...accounts, newAccount];
         setDefaultAccountBlocked(false);
         onAccountsChange(newAccounts);
-    };
+        setIsCollapsed(false);      
+    }, [accounts, onAccountsChange]);
+
 
     const handleAccountChange = useCallback(
         (updatedAccount: BankAccountItemProps['account']) => {
@@ -65,51 +69,46 @@ const BankAccountsForm: React.FC<BankAccountsFormProps> = ({
         [accounts, onAccountsChange],
     );
 
-    const handleSwitchChange = useCallback(
-        (id: string, isDefault: boolean) => {
-            const accountIndex = accounts.findIndex((account) => account.id === id);
-            if (accountIndex === -1) {
-                return;
-            }
-            const newAccounts: BankAccountItems[] = [...accounts];
-            newAccounts.forEach((account) => (account.isDefault = false));
-            newAccounts[accountIndex].isDefault = isDefault;
-            setDefaultAccountBlocked(!isDefault);
-            onAccountsChange(newAccounts);
-        },
-        [accounts, onAccountsChange],
-    );
+    const handleSwitchChange = useCallback((id: string, isDefault: boolean) => {
+        const newAccounts: BankAccountItems[] = [...accounts];
+        newAccounts.forEach((account) => {
+            account.is_default = account.id === id ? isDefault : false;
+        });
+        setDefaultAccountBlocked(isDefault);
+        onAccountsChange(newAccounts);
+    }, [accounts, onAccountsChange]);
 
     const handleDeleteAccount = useCallback((id: string) => {
         const deletedAccount = accounts.find((account) => account.id === id);
         const newAccounts: BankAccountItems[] = accounts.filter((account) => account.id !== id);
-        if (deletedAccount && deletedAccount.isDefault) {
-            newAccounts[0].isDefault = true;
+        if (deletedAccount && deletedAccount.is_default) {
+            newAccounts[0].is_default = true;
         }
         setActiveAccountId(newAccounts.length > 0 ? newAccounts[0].id : '');
         onAccountsChange(newAccounts);
+        setIsCollapsed(false);  
     }, [accounts, onAccountsChange]);
 
     return (
-        <Collapse expanded title="Банковские счета:">
-            {accounts.map((account, index) => (
-                <Container key={account.id} title={account.name}>
-                    <BankAccountItem
-                        account={account}
-                        onAccountChange={handleAccountChange}
-                        onSwitchChange={handleSwitchChange}
-                    />
-                    {accounts.length > 1 && index > 0 && (
-                        <Button ghost auto color="warning"
-                            onPress={() => handleDeleteAccount(account.id)}
-                        >
-                            Удалить счет
-                        </Button>
-                    )}
-                </Container>
-            ))}
+        <Collapse expanded={isCollapsed} title="Банковские счета:" >                    
+                {accounts.map((account, index) => (
+                    <Container key={account.id} title={account.name} >
+                        <BankAccountItem
+                            account={account}
+                            onAccountChange={handleAccountChange}
+                            onSwitchChange={handleSwitchChange}
+                        />
+                        {accounts.length > 1 && index > 0 && (
+                            <Button ghost auto color="warning"
+                                onPress={() => handleDeleteAccount(account.id)}>
+                                Удалить счет                                
+                            </Button>                            
+                        )}
+                        <Spacer y={2} />
+                    </Container>
+                ))}
             <Spacer y={1.5} />
-            <Button auto color="success" onPress={handleAddAccountClick}>
+            <Button auto onPress={handleAddAccountClick}>
                 Добавить счет
             </Button>
             <Spacer y={1.5} />

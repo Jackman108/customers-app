@@ -1,33 +1,16 @@
 import { Collapse, Input, Spacer, Container } from "@nextui-org/react";
-import React from "react";
+import { FC } from "react";
 
-interface OrganizationDetailsProps {
-    id: string
-    name: string;
-    inn: string;
-    kpp: string;
-    ogrn: string;
-    addr: string;
-    onNameChange: (name: string) => void;
-    onInnChange: (inn: string) => void;
-    onKppChange: (kpp: string) => void;
-    onOgrnChange: (ogrn: string) => void;
-    onAddressChange: (addr: string) => void;
+export interface OrganizationProps {
+    orgDetails: OrgDetails;
+    onOrgDetailsChange: (updatedOrgDetails: OrgDetails) => void;
 }
+const OrganizationDetails: FC<OrganizationProps> = ({
+    orgDetails,
+    onOrgDetailsChange,
+}) => {
+    const { id, name, inn, kpp, ogrn, addr, } = orgDetails;
 
-function OrganizationDetails({
-    id,
-    name,
-    inn,
-    kpp,
-    ogrn,
-    addr,
-    onNameChange,
-    onInnChange,
-    onKppChange,
-    onOgrnChange,
-    onAddressChange,
-}: OrganizationDetailsProps) {
     return (
         <Collapse expanded title="Детали Организации:">
             <Container>
@@ -37,7 +20,9 @@ function OrganizationDetails({
                     label="Название Организации:"
                     type="text"
                     value={name}
-                    onChange={(event) => onNameChange(event.target.value)}
+                    onChange={(event) =>
+                        onOrgDetailsChange({ ...orgDetails, name: event.target.value })
+                    }
                     required={true}
                     bordered
                     clearable
@@ -53,7 +38,9 @@ function OrganizationDetails({
                     label="ИНН Организации:"
                     type="text"
                     value={inn}
-                    onChange={(event) => onInnChange(event.target.value)}
+                    onChange={(event) =>
+                        onOrgDetailsChange({ ...orgDetails, inn: event.target.value })
+                    }
                     required={true}
                     bordered
                     clearable
@@ -69,7 +56,9 @@ function OrganizationDetails({
                     label="КПП Организации:"
                     type="text"
                     value={kpp}
-                    onChange={(event) => onKppChange(event.target.value)}
+                    onChange={(event) =>
+                        onOrgDetailsChange({ ...orgDetails, kpp: event.target.value })
+                    }
                     required={true}
                     bordered
                     clearable
@@ -85,7 +74,9 @@ function OrganizationDetails({
                     label="ОГРН Организации:"
                     type="text"
                     value={ogrn}
-                    onChange={(event) => onOgrnChange(event.target.value)}
+                    onChange={(event) =>
+                        onOrgDetailsChange({ ...orgDetails, ogrn: event.target.value })
+                    }
                     required={true}
                     bordered
                     clearable
@@ -101,7 +92,9 @@ function OrganizationDetails({
                     label="Адрес Организации:"
                     type="text"
                     value={addr}
-                    onChange={(event) => onAddressChange(event.target.value)}
+                    onChange={(event) =>
+                        onOrgDetailsChange({ ...orgDetails, addr: event.target.value })
+                    }
                     required={true}
                     bordered
                     clearable

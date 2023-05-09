@@ -1,85 +1,112 @@
-import { Modal, Button, Text, Container, Collapse, Spacer } from "@nextui-org/react";
-import React, { useState, FormEvent, memo } from "react";
+import { Modal, Button, Text, Collapse, Spacer } from "@nextui-org/react";
+import { FC, useState, FormEvent, memo } from "react";
 import ClientDetails from "../Collapse/ClientDetails";
 import OrganizationDetails from "../Collapse/OrganizationDetails";
 import generateRandomString from "../helpers/randomString";
 import BankAccountsForm from "../Collapse/BankAccountsForm";
-import { BankAccountItems } from "../Collapse/BankAccountItem";
 import BackupEmails from "../Collapse/BackupEmails";
 import MetaData from "../Collapse/MetaData";
 interface ClientModalProps {
-    handleAddClient: (client: Customer) => void;
+    handleAddClient: (client: Customer) => React.MouseEventHandler<HTMLButtonElement>;
     onClose: () => void;
     bindings?: { open: boolean; onClose: () => void; };
 }
 const MemoizedBankAccountsForm = memo(BankAccountsForm);
 
-function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClose } }: ClientModalProps): JSX.Element {
-    const [id, setId] = useState<string>(generateRandomString(8));
-    const [name, setName] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [deferralDays, setDeferralDays] = useState<number>(0);
-    const [creditLimit, setCreditLimit] = useState<number>(0);
+const ClientModal: FC<ClientModalProps> = ({
+    handleAddClient,
+    onClose,
+    bindings = { open: false, onClose }
+}): JSX.Element => {
+    const id = generateRandomString(8);
+    const newDate = new Date().toString();
+    const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([
+        {
+            id,
+            name: "",
+            account_number: "",
+            bik: "",
+            corr_account_number: "",
+            is_default: true,
+            created_at: newDate,
+            updated_at: newDate,
+        }
+    ]);
 
-    const [orgName, setOrgName] = useState<string>('');
-    const [inn, setInn] = useState<string>('');
-    const [kpp, setKpp] = useState<string>('');
-    const [ogrn, setOgrn] = useState<string>('');
-    const [addr, setAddress] = useState<string>('');
+    const [organization, setOrganization] = useState<OrgDetails>({
+        id,
+        name: "",
+        inn: "",
+        kpp: "",
+        ogrn: "",
+        addr: "",
+        created_at: newDate,
+        updated_at: newDate,
+    });
 
-    const [bankName, setBankName] = useState<string>('');
-    const [accountNum, setAccountNum] = useState<string>('');
-    const [bik, setBik] = useState<string>('');
-    const [corrAccount, setCorrAccount] = useState<string>('');
-    const [isDefault, setIsDefault] = useState<boolean>(true);
+    const [backupEmails, setBackupEmails] = useState<BackupEmail[]>([
+        {
+            id,
+            email: "",
+        }
+    ]
+    );
 
-    const [backupEmailItem, setBackupEmail] = useState<string>('');
-    const [key, setKey] = useState<string>('');
-    const [value, setValue] = useState<string>('');
-
-    const [bankAccounts, setBankAccounts] = useState<BankAccountItems[]>([]);
-    const [backupEmails, setBackupEmails] = useState<BackupEmail[]>([]);
-    const [metaData, setMetaData] = useState<MetaData[]>([]);
-
+    const [data, setData] = useState<MetaData[]>([
+        {
+            key: newDate,
+            value: newDate,
+        }
+    ]);
+    const [clientDetails, setClientDetails] = useState<Customer>({
+        id,
+        name: "",
+        email: "",
+        deferral_days: 0,
+        credit_limit: 0,
+        created_at: newDate,
+        updated_at: newDate,
+        backupEmails: [],
+        org: organization,
+        metadata: []
+    });
     const [formIsValid, setFormIsValid] = useState<boolean>(false);
+
     const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        console.log('handleSubmit called');
-        console.log(name, email, deferralDays, creditLimit, orgName, inn, kpp, ogrn, addr, bankAccounts, backupEmails, metaData);
+        console.log('handleSubmit called',
+            clientDetails, organization, bankAccounts, backupEmails, data);
+
+        const validateMetaData = (data: MetaData[]): boolean => {
+            return data.every((dataM: MetaData) => {
+                const { key, value } = dataM || {};;
+                return (
+                    typeof key === 'string' && typeof value === 'string' && key.trim() !== '' && value.trim() !== ''
+                );
+            });
+        };
+
         const validateBackupEmails = (backupEmails: BackupEmail[]): boolean => {
-            return backupEmails.every((emails) => {
-                const { id, email } = emails;
+            return backupEmails.every((emails: BackupEmail) => {
+                const { id, email } = emails || {};;
                 return (
-                    typeof id === 'string' &&
-                    typeof email === 'string' &&
-                    id.trim() !== '' &&
-                    email.trim() !== ''
+                    typeof id === 'string' && typeof email === 'string' && id.trim() !== '' && email.trim() !== ''
                 );
             });
         };
-        const validateMetaData = (metaData: MetaData[]): boolean => {
-            return metaData.every((data) => {
-                const { key, value } = data;
-                return (
-                    typeof key === 'string' &&
-                    typeof value === 'string' &&
-                    key.trim() !== '' &&
-                    value.trim() !== ''
-                );
-            });
-        };
-        const validateBankAccounts = (bankAccounts: BankAccountItems[]): boolean => {
-            return bankAccounts.every((account) => {
-                const { name, accountNum, bik, corrAccount } = account;
+
+        const validateBankAccounts = (bank: BankAccount[]): boolean => {
+            return bank.every((account: BankAccount) => {
+                const { id, name: bankName, account_number: accountNum, bik, corr_account_number: corrAccount, is_default: isDefault } = account || {};;
                 return (
                     typeof id === 'string' &&
-                    typeof name === 'string' &&
+                    typeof bankName === 'string' &&
                     typeof accountNum === 'string' &&
                     typeof bik === 'string' &&
                     typeof corrAccount === 'string' &&
                     typeof isDefault === 'boolean' &&
                     id.trim() !== '' &&
-                    name.trim() !== '' &&
+                    bankName.trim() !== '' &&
                     accountNum.trim() !== '' &&
                     bik.trim() !== '' &&
                     corrAccount.trim() !== '' &&
@@ -87,98 +114,138 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                 );
             });
         };
-        const validateDetails = () => {
-            const customerFields = [
-                name,
-                email,
-            ];
-            const requiredFields = [...customerFields];
-            return requiredFields.every((field) => field.trim() !== "");
+
+        const validateOrg = (organization: OrgDetails) => {
+            const { id, name, inn, kpp, ogrn, addr } = organization || {};
+            return (
+                typeof id === 'string' &&
+                typeof name === 'string' &&
+                typeof inn === 'string' &&
+                typeof kpp === 'string' &&
+                typeof ogrn === 'string' &&
+                typeof addr === 'string' &&
+                name.trim() !== '' &&
+                inn.trim() !== '' &&
+                kpp.trim() !== '' &&
+                ogrn.trim() !== '' &&
+                addr.trim() !== ''
+            );
         };
-        const validateOrg = () => {
-            const customerFields = [
-                orgName,
-                inn,
-                kpp,
-                ogrn,
-                addr,
-            ];
-            const requiredFields = [...customerFields];
-            return requiredFields.every((field) => field.trim() !== "");
+        const validateDetails = (clientDetails: Customer) => {
+            const { id, name, email, deferral_days: deferralDays, credit_limit: creditLimit} = clientDetails || {};
+            return (
+                typeof id === 'string' &&
+                typeof name === 'string' &&
+                typeof email === 'string' &&
+                typeof deferralDays === 'number' &&
+                typeof creditLimit === 'number' &&
+                id.trim() !== '' &&
+                name.trim() !== '' &&
+                email.trim() !== '' &&
+                deferralDays >= 0 &&
+                creditLimit >= 0
+            );
         };
+
         const formIsValid =
-            validateDetails() &&
-            validateOrg() &&
+            validateDetails(clientDetails) &&
+            validateOrg(organization) &&
             validateBankAccounts(bankAccounts) &&
-            validateBackupEmails(backupEmails);
-        validateMetaData(metaData);
+            validateBackupEmails(backupEmails) &&
+            validateMetaData(data);
+
+        
+
         if (formIsValid) {
-            console.log('formIsValid');
-            const newDate = new Date().toString();
-            const backupEmail: BackupEmail[] = [{
-                id,
-                email: backupEmailItem,
-            }];
-            const metaData: MetaData[] = [{
-                key,
-                value,
-            }];
-            const bankAccountsArr: BankAccount[] = [{
-                id,
-                name: bankName,
-                bik,
-                account_number: accountNum,
-                corr_account_number: corrAccount,
-                is_default: isDefault,
-                created_at: newDate,
-                updated_at: newDate,
-            }];
-            const organization: Org = {
-                id,
-                name: orgName,
-                inn,
-                kpp,
-                ogrn,
-                addr,
+
+            const metadata: MetaData[] = data.map(metaData => {
+                return {
+                    key: metaData.key,
+                    value: metaData.value,
+                };
+            });
+            const backupEmail: BackupEmail[] = backupEmails.map(backupEmails => {
+                return {
+                    id: backupEmails.id,
+                    email: backupEmails.email,
+                };
+            });
+
+            const bankAccountsArr: BankAccount[] = bankAccounts.map(bankAccount => {
+                return {
+                    id: bankAccount.id,
+                    name: bankAccount.name,
+                    bik: bankAccount.bik,
+                    account_number: bankAccount.account_number,
+                    corr_account_number: bankAccount.corr_account_number,
+                    is_default: bankAccount.is_default,
+                    created_at: newDate,
+                    updated_at: newDate,
+                };
+            });
+
+            const org: OrgDetails = {
+                id: organization.id,
+                name: organization.name,
+                inn: organization.inn,
+                kpp: organization.kpp,
+                ogrn: organization.ogrn,
+                addr: organization.addr,
                 bank_accounts: bankAccountsArr,
                 created_at: newDate,
                 updated_at: newDate,
             };
-
-            const client: Customer = {
-                id,
-                name,
-                email,
-                deferral_days: deferralDays,
-                credit_limit: creditLimit,
-                org: organization,
-                metadata: metaData,
+            const customerDetails: Customer = {
+                id: clientDetails.id,
+                name: clientDetails.name,
+                email: clientDetails.email,
+                deferral_days: clientDetails.deferral_days,
+                credit_limit: clientDetails.credit_limit,
+                org: org,
+                metadata: metadata,
                 created_at: newDate,
                 updated_at: newDate,
                 backupEmails: backupEmail,
             };
-
-            handleAddClient(client);
-            setName('');
-            setEmail('');
-            setDeferralDays(0);
-            setCreditLimit(0);
-            setOrgName('');
-            setInn('');
-            setKpp('');
-            setOgrn('');
-            setAddress('');
-            setBankName('');
-            setAccountNum('');
-            setBik('');
-            setCorrAccount('');
-            setIsDefault(true);
-            setBackupEmail('');
-            setKey('');
-            setValue('');
-            setBankAccounts([]);
-            setBackupEmails([]);
-            setMetaData([]);
+            console.log('formIsValid');
+            handleAddClient(customerDetails);
+            setClientDetails({
+                id,
+                name: "",
+                email: "",
+                deferral_days: 0,
+                credit_limit: 0,
+                org: {
+                    id,
+                    name:"",
+                    inn: "",
+                    kpp: "",
+                    ogrn: "",
+                    addr: "",
+                    bank_accounts: [{
+                        id: generateRandomString(8),
+                        name: "",
+                        account_number: "",
+                        bik: "",
+                        corr_account_number: "",
+                        is_default: true, 
+                        created_at: newDate,
+                        updated_at: newDate,                      
+                    }],
+                    created_at: newDate,
+                    updated_at: newDate,
+                },
+                metadata: [{
+                    key: "",
+                    value: "",
+                }],
+                backupEmails: [{
+                    id,
+                    email: "",
+                }],
+                created_at: newDate,
+                updated_at: newDate,
+            });
             setFormIsValid(false);
             onClose();
         }
@@ -200,51 +267,33 @@ function ClientModal({ handleAddClient, onClose, bindings = { open: false, onClo
                     </Text>
                 </Modal.Header>
                 <Modal.Body>
-                    <Container id="modal-description">
-                        <Collapse.Group >
-                            <ClientDetails
-                                id={id}
-                                name={name}
-                                email={email}
-                                deferralDays={deferralDays}
-                                creditLimit={creditLimit}
-                                onNameChange={setName}
-                                onEmailChange={setEmail}
-                                onDeferralDaysChange={setDeferralDays}
-                                onCreditLimitChange={setCreditLimit}
-                            />
-                            <Spacer y={2} />
-                            <OrganizationDetails
-                                id={id}
-                                name={orgName}
-                                inn={inn}
-                                kpp={kpp}
-                                ogrn={ogrn}
-                                addr={addr}
-                                onNameChange={setOrgName}
-                                onInnChange={setInn}
-                                onKppChange={setKpp}
-                                onOgrnChange={setOgrn}
-                                onAddressChange={setAddress}
-                            />
-                            <Spacer y={2} />
-                            <MemoizedBankAccountsForm
-                                accounts={bankAccounts}
-                                onAccountsChange={setBankAccounts}
-                            />
-                            <Spacer y={2} />
-                            <BackupEmails
-                                emails={backupEmails}
-                                onEmailsChange={setBackupEmails}
-                            />
-                            <Spacer y={2} />
-                            <MetaData
-                                metaData={metaData}
-                                onMetaChange={setMetaData}
-                            />
-                            <Spacer y={2} />
-                        </Collapse.Group>
-                    </Container>
+                    <Collapse.Group splitted >
+                        <ClientDetails
+                            details={clientDetails}
+                            onDetailsChange={setClientDetails}
+                        />
+                        <Spacer y={2} />
+                        <OrganizationDetails
+                            orgDetails={organization}
+                            onOrgDetailsChange={setOrganization}
+                        />
+                        <Spacer y={2} />
+                        <MemoizedBankAccountsForm
+                            accounts={bankAccounts}
+                            onAccountsChange={setBankAccounts}
+                        />
+                        <Spacer y={2} />
+                        <BackupEmails
+                            emails={backupEmails}
+                            onEmailsChange={setBackupEmails}
+                        />
+                        <Spacer y={2} />
+                        <MetaData
+                            metaData={data}
+                            onMetaChange={setData}
+                        />
+                        <Spacer y={2} />
+                    </Collapse.Group>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button auto flat color="error" onPress={onClose}>

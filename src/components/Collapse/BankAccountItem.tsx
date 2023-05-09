@@ -1,18 +1,10 @@
 import { Container, Input, Spacer, Switch, Button, Text } from "@nextui-org/react";
 import React, { useState, FC } from "react";
 
-export interface BankAccountItems {
-    id: string;
-    name: string;
-    accountNum: string;
-    bik: string;
-    corrAccount: string;
-    isDefault: boolean;
-}
 
 export interface BankAccountItemProps {
-    account: BankAccountItems;
-    onAccountChange: (updatedAccount: BankAccountItems) => void;
+    account: BankAccount;
+    onAccountChange: (updatedAccount: BankAccount) => void;
     onSwitchChange: (id: string, isDefault: boolean) => void;
 }
 
@@ -21,7 +13,7 @@ const BankAccountItem: FC<BankAccountItemProps> = ({
     onAccountChange,
     onSwitchChange,
 }) => {
-    const { id, name, accountNum, bik, corrAccount, isDefault } = account;
+    const { id, name: name, account_number: accountNum, bik, corr_account_number: corrAccount, is_default: isDefault } = account;
     const [prevIsDefault, setPrevIsDefault] = useState(isDefault);
 
     const handleDefaultChange = (): void => {
@@ -66,7 +58,7 @@ const BankAccountItem: FC<BankAccountItemProps> = ({
                 type="text"
                 value={accountNum}
                 onChange={(event) =>
-                    onAccountChange({ ...account, accountNum: event.target.value })
+                    onAccountChange({ ...account, account_number: event.target.value })
                 }
                 required
                 bordered
@@ -104,7 +96,7 @@ const BankAccountItem: FC<BankAccountItemProps> = ({
                 type="text"
                 value={corrAccount}
                 onChange={(event) =>
-                    onAccountChange({ ...account, corrAccount: event.target.value })
+                    onAccountChange({ ...account, corr_account_number: event.target.value })
                 }
                 required={true}
                 bordered
